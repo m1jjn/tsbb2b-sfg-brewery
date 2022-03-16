@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
@@ -81,13 +82,16 @@ class BeerControllerTest {
 
         given(beerService.findBeerById(any())).willReturn(validBeer);
 
-        mockMvc.perform(get("/api/v1/beer/" + validBeer.getId()))
+        MvcResult result = mockMvc.perform(get("/api/v1/beer/" + validBeer.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is(validBeer.getId().toString())))
                 .andExpect(jsonPath("$.beerName", is(validBeer.getBeerName())))
                 .andExpect(jsonPath("$.createdDate",
-                        is(dateTimeFormatter.format(validBeer.getCreatedDate()))));
+                        is(dateTimeFormatter.format(validBeer.getCreatedDate()))))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
     }
 
     @DisplayName("List Ops -")
